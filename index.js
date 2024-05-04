@@ -20,14 +20,24 @@ app.get("/", (req, res) => {
 });
 
 // db connection
+// const connectDb = async () => {
+//   try {
+//     await mongoose.connect(
+//       "mongodb://root:secret@mongo:27017/easySchool?authSource=admin"
+//     );
+//     console.log("Connected to mongoDB");
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 const connectDb = async () => {
   try {
     await mongoose.connect(
-      "mongodb://root:secret@mongo:27017/easySchool?authSource=admin"
+      `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.l9ikg.mongodb.net/easy_school?retryWrites=true&w=majority`
     );
     console.log("Connected to mongoDB");
   } catch (error) {
-    console.log(error);
+    throw error;
   }
 };
 mongoose.connection.on("disconnected", () => {
@@ -131,8 +141,6 @@ app.delete("/api/delete/:imagename", function (req, res) {
     }
   }
 });
-
-console.log(process.env.name);
 
 app.listen(port, () => {
   connectDb();
