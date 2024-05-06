@@ -24,7 +24,6 @@ const updateStudent = async (req, res, next) => {
     next(err);
   }
 };
-
 const deleteStudent = async (req, res, next) => {
   try {
     await Student.findByIdAndDelete(req.params.id);
@@ -53,6 +52,23 @@ const getAllStudent = async (req, res, next) => {
     next(err);
   }
 };
+const getUserResult = async (req, res, next) => {
+  try {
+    const student = await Student.findById(req.params.id);
+    if (!student) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    const examTypes = student.examMarks.map((item) => item.examType);
+
+    res.status(200).json({
+      student,
+      examTypes,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 module.exports = {
   createStudent,
@@ -60,4 +76,5 @@ module.exports = {
   deleteStudent,
   getSingleStudent,
   getAllStudent,
+  getUserResult,
 };

@@ -7,8 +7,12 @@ const path = require("path");
 const app = express();
 const bookListRoute = require("./routes/booklists");
 const studentRoute = require("./routes/students");
-const teacherRoute = require("./routes/teachers");
+const employeeRoute = require("./routes/employee");
 const classRoute = require("./routes/classes");
+const authRoute = require("./routes/auth");
+const classRoutingRoute = require("./routes/classRoutings");
+const examRoutingRoute = require("./routes/examRoutings");
+const syllabusRoute = require("./routes/syllabuses");
 
 app.use(cors());
 app.use(express.json());
@@ -40,6 +44,7 @@ const connectDb = async () => {
     throw error;
   }
 };
+
 mongoose.connection.on("disconnected", () => {
   console.log("mongoDB disconnected");
 });
@@ -49,14 +54,22 @@ mongoose.connection.on("connected", () => {
 
 // all route
 app.use("/api/book-list", bookListRoute);
+app.use("/api/exam-routing", examRoutingRoute);
+app.use("/api/class-routing", classRoutingRoute);
+app.use("/api/syllabus", syllabusRoute);
 app.use("/api/student", studentRoute);
-app.use("/api/teacher", teacherRoute);
+app.use("/api/employee", employeeRoute);
 app.use("/api/class", classRoute);
+app.use("/api/login", authRoute);
 
 // file upload
 const uploadBook = "./public/upload/book-list";
 const studentClass = "./public/upload/student";
-const teacherClass = "./public/upload/teacher";
+const employee = "./public/upload/employee";
+const classRouting = "./public/upload/class-routing";
+const examRouting = "./public/upload/exam-routing";
+const syllabus = "./public/upload/syllabus";
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     console.log(file.fieldname);
@@ -64,8 +77,14 @@ const storage = multer.diskStorage({
       cb(null, uploadBook);
     } else if (file.fieldname === "student") {
       cb(null, studentClass);
-    } else if (file.fieldname === "teacher") {
-      cb(null, teacherClass);
+    } else if (file.fieldname === "employee") {
+      cb(null, employee);
+    } else if (file.fieldname === "class-routing") {
+      cb(null, classRouting);
+    } else if (file.fieldname === "exam-routing") {
+      cb(null, examRouting);
+    } else if (file.fieldname === "syllabus") {
+      cb(null, syllabus);
     }
   },
   filename: (req, file, cb) => {
@@ -92,11 +111,16 @@ const upload = multer({
 
 app.post(
   "/api/upload",
+
   upload.fields([
     { name: "book", maxCount: 1 },
     { name: "student", maxCount: 1 },
-    { name: "teacher", maxCount: 5 },
+    { name: "employee", maxCount: 1 },
+    { name: "class-routing", maxCount: 1 },
+    { name: "exam-routing", maxCount: 1 },
+    { name: "syllabus", maxCount: 1 },
   ]),
+
   async (req, res) => {
     try {
       return res.status(201).json("file upload successfully");
@@ -112,12 +136,24 @@ app.use(
   express.static(path.join(__dirname, "./public/upload/book-list/"))
 );
 app.use(
+  "/class-routing",
+  express.static(path.join(__dirname, "./public/upload/class-routing/"))
+);
+app.use(
+  "/exam-routing",
+  express.static(path.join(__dirname, "./public/upload/exam-routing/"))
+);
+app.use(
+  "/syllabus",
+  express.static(path.join(__dirname, "./public/upload/syllabus/"))
+);
+app.use(
   "/student",
   express.static(path.join(__dirname, "./public/upload/student/"))
 );
 app.use(
-  "/teacher",
-  express.static(path.join(__dirname, "./public/upload/teacher/"))
+  "/employee",
+  express.static(path.join(__dirname, "./public/upload/employee/"))
 );
 
 app.delete("/api/delete/:imagename", function (req, res) {

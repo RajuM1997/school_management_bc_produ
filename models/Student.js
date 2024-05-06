@@ -69,6 +69,9 @@ const StudentSchema = new mongoose.Schema(
     shift: {
       type: String,
     },
+    userId: {
+      type: String,
+    },
     gender: {
       type: String,
       required: true,
