@@ -45,6 +45,9 @@ const getSingleStudent = async (req, res, next) => {
 const getAllStudent = async (req, res, next) => {
   const { ...others } = req.query;
   console.log(others);
+  if (others.userId === "" || !others.userId) {
+    delete others.userId;
+  }
   try {
     const student = await Student.find({ ...others });
     res.status(200).json(student);

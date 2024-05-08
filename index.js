@@ -34,6 +34,7 @@ app.get("/", (req, res) => {
 //     console.log(error);
 //   }
 // };
+
 const connectDb = async () => {
   try {
     await mongoose.connect(
