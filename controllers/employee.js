@@ -1,3 +1,4 @@
+const { log } = require("console");
 const Employee = require("../models/Employee.js");
 
 const createEmployee = async (req, res, next) => {
@@ -44,8 +45,12 @@ const getSingleEmployee = async (req, res, next) => {
 };
 
 const getAllEmployee = async (req, res, next) => {
+  const { ...others } = req.query;
+  console.log(others);
   try {
-    const employee = await Employee.find();
+    const employee = await Employee.find({
+      ...others,
+    });
     res.status(200).json(employee);
   } catch (err) {
     next(err);

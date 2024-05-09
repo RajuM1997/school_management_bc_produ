@@ -1,4 +1,5 @@
 const Student = require("../models/Student.js");
+const { parseISO, format, getMonth, getYear } = require("date-fns");
 
 const createStudent = async (req, res, next) => {
   const newStudent = new Student(req.body);
@@ -44,10 +45,20 @@ const getSingleStudent = async (req, res, next) => {
 
 const getAllStudent = async (req, res, next) => {
   const { ...others } = req.query;
-  console.log(others);
+
   if (others.userId === "" || !others.userId) {
     delete others.userId;
   }
+  if (others.username === "" || !others.username) {
+    delete others.username;
+  }
+  if (others.rollNumber === "" || !others.rollNumber) {
+    delete others.rollNumber;
+  }
+  if (others.class === "" || !others.class) {
+    delete others.class;
+  }
+  console.log(others);
   try {
     const student = await Student.find({ ...others });
     res.status(200).json(student);
@@ -73,6 +84,38 @@ const getUserResult = async (req, res, next) => {
   }
 };
 
+const getMonthlyFee = async (req, res, next) => {
+  try {
+    const students = await Student.find();
+    const allPaidData = students.flatMap((student) => {
+      return Array.isArray(student.feeInfo)
+        ? student.feeInfo.flatMap((info) => info.paidData || [])
+        : [];
+    });
+
+    const monthlyTotals = {};
+    allPaidData.forEach((data) => {
+      const paidDate = parseISO(data.paidDate);
+      const monthYear = format(paidDate, "MMMM yyyy");
+
+      if (!monthlyTotals[monthYear]) {
+        monthlyTotals[monthYear] = 0;
+      }
+
+      monthlyTotals[monthYear] += data.totalPaid || 0;
+    });
+
+    const result = Object.keys(monthlyTotals).map((key) => ({
+      monthName: key,
+      paidAmount: monthlyTotals[key],
+    }));
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createStudent,
   updateStudent,
@@ -80,4 +123,5 @@ module.exports = {
   getSingleStudent,
   getAllStudent,
   getUserResult,
+  getMonthlyFee,
 };
