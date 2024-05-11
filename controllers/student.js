@@ -1,5 +1,5 @@
 const Student = require("../models/Student.js");
-const { parseISO, format, getMonth, getYear } = require("date-fns");
+const { parseISO, format, startOfDay, isSameDay } = require("date-fns");
 
 const createStudent = async (req, res, next) => {
   const newStudent = new Student(req.body);
@@ -116,6 +116,42 @@ const getMonthlyFee = async (req, res, next) => {
   }
 };
 
+const getDailyFee = async (req, res, next) => {
+  try {
+    const { date } = req.query;
+    if (!date) {
+      return res
+        .status(400)
+        .json({ error: "Date query parameter is required" });
+    }
+
+    const targetDate = startOfDay(parseISO(date));
+    const students = await Student.find();
+
+    const allPaidData = students.flatMap((student) => {
+      return Array.isArray(student.feeInfo)
+        ? student.feeInfo.flatMap((info) => info.paidData || [])
+        : [];
+    });
+
+    const dailyPaidData = allPaidData.filter((data) => {
+      const paidDate = startOfDay(parseISO(data.paidDate));
+      console.log({ targetDate });
+      console.log({ paidDate });
+      return isSameDay(paidDate, targetDate);
+    });
+
+    const totalPaid = dailyPaidData.reduce(
+      (sum, data) => sum + (data.totalPaid || 0),
+      0
+    );
+
+    res.status(200).json({ date: targetDate, totalPaid });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   createStudent,
   updateStudent,
@@ -124,4 +160,5 @@ module.exports = {
   getAllStudent,
   getUserResult,
   getMonthlyFee,
+  getDailyFee,
 };

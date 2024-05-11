@@ -13,6 +13,8 @@ const authRoute = require("./routes/auth");
 const classRoutingRoute = require("./routes/classRoutings");
 const examRoutingRoute = require("./routes/examRoutings");
 const syllabusRoute = require("./routes/syllabuses");
+const noticeRoute = require("./routes/notices");
+const festivalRoute = require("./routes/festivals");
 
 app.use(cors());
 app.use(express.json());
@@ -62,6 +64,8 @@ app.use("/api/student", studentRoute);
 app.use("/api/employee", employeeRoute);
 app.use("/api/class", classRoute);
 app.use("/api/login", authRoute);
+app.use("/api/notice", noticeRoute);
+app.use("/api/festival", festivalRoute);
 
 // file upload
 const uploadBook = "./public/upload/book-list";
@@ -70,6 +74,8 @@ const employee = "./public/upload/employee";
 const classRouting = "./public/upload/class-routing";
 const examRouting = "./public/upload/exam-routing";
 const syllabus = "./public/upload/syllabus";
+const notice = "./public/upload/notice";
+const festival = "./public/upload/festival";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -86,6 +92,10 @@ const storage = multer.diskStorage({
       cb(null, examRouting);
     } else if (file.fieldname === "syllabus") {
       cb(null, syllabus);
+    } else if (file.fieldname === "notice") {
+      cb(null, notice);
+    } else if (file.fieldname === "festival") {
+      cb(null, festival);
     }
   },
   filename: (req, file, cb) => {
@@ -120,6 +130,8 @@ app.post(
     { name: "class-routing", maxCount: 1 },
     { name: "exam-routing", maxCount: 1 },
     { name: "syllabus", maxCount: 1 },
+    { name: "notice", maxCount: 1 },
+    { name: "festival", maxCount: 1 },
   ]),
 
   async (req, res) => {
@@ -155,6 +167,15 @@ app.use(
 app.use(
   "/employee",
   express.static(path.join(__dirname, "./public/upload/employee/"))
+);
+app.use(
+  "/notice",
+  express.static(path.join(__dirname, "./public/upload/notice/"))
+);
+
+app.use(
+  "/festival",
+  express.static(path.join(__dirname, "./public/upload/festival/"))
 );
 
 app.delete("/api/delete/:imagename", function (req, res) {

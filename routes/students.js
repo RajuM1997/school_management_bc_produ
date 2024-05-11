@@ -7,6 +7,7 @@ const {
   createStudent,
   getUserResult,
   getMonthlyFee,
+  getDailyFee,
 } = require("../controllers/student.js");
 
 const router = express.Router();
@@ -31,5 +32,8 @@ router.get("/result/:id", getUserResult);
 
 //Get student payment
 router.get("/payment/monthly", getMonthlyFee);
+
+//Get student payment
+router.get("/payment/single/daily", getDailyFee);
 
 module.exports = router;
