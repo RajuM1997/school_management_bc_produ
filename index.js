@@ -26,30 +26,27 @@ app.get("/", (req, res) => {
 });
 
 // db connection
-const connectDb = async () => {
-  try {
-    await mongoose.connect(
-      "mongodb://root:secret@mongo:27017/easySchool?authSource=admin"
-    );
-    console.log("Connected to mongoDB");
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 // const connectDb = async () => {
 //   try {
 //     await mongoose.connect(
-//       `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.pkze7zw.mongodb.net/easy_school?retryWrites=true&w=majority`
+//       "mongodb://root:secret@mongo:27017/easySchool?authSource=admin"
 //     );
 //     console.log("Connected to mongoDB");
 //   } catch (error) {
-//     throw error;
+//     console.log(error);
 //   }
 // };
 
-console.log(process.env.MONGO_USERNAME);
-console.log(process.env.MONGO_PASS);
+const connectDb = async () => {
+  try {
+    await mongoose.connect(
+      `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.pkze7zw.mongodb.net/easy_school?retryWrites=true&w=majority`
+    );
+    console.log("Connected to mongoDB");
+  } catch (error) {
+    throw error;
+  }
+};
 
 mongoose.connection.on("disconnected", () => {
   console.log("mongoDB disconnected");
