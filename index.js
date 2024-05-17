@@ -38,9 +38,10 @@ app.get("/", (req, res) => {
 // };
 
 const connectDb = async () => {
+  // const url = `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.pkze7zw.mongodb.net/easy_school?retryWrites=true&w=majority`
   try {
     await mongoose.connect(
-      `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.pkze7zw.mongodb.net/easy_school?retryWrites=true&w=majority`
+      `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASS}@cluster0.l9ikg.mongodb.net/school_management_produ?retryWrites=true&w=majority`
     );
     console.log("Connected to mongoDB");
   } catch (error) {
